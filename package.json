@@ -1,0 +1,20 @@
+{
+  "name": "salesforce-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "dotenv": "^16.4.5",
+    "jsforce": "^2.0.0-beta.29",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.7"
+  }
+}
