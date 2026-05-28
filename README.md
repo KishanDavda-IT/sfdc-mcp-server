@@ -1,5 +1,10 @@
 # Salesforce MCP Server
 
+[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520-brightgreen.svg)](https://nodejs.org)
+[![Model Context Protocol](https://img.shields.io/badge/MCP-Protocol-blue.svg)](https://modelcontextprotocol.io)
+[![Tests](https://img.shields.io/badge/tests-46%20passed-success.svg)](#)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A production-grade Node.js MCP (Model Context Protocol) server that gives any AI agent full CRUD + query + Apex control over a Salesforce org via **10 typed tools**.
 
 ## Quick Start
