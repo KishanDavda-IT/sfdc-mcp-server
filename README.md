@@ -136,3 +136,7 @@ src/
 | `dotenv` | ^16.4.5 |
 
 Runtime: Node.js ≥ 20
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
