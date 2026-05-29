@@ -164,22 +164,28 @@ export function checkObjectAccess(objectType) {
  * like `delete [SELECT Id FROM Account LIMIT 10000];`.
  */
 export function checkToolEnabled(toolName) {
-  // sf_apex requires explicit opt-in
-  if (toolName === 'sf_apex') {
-    if (process.env.SF_ENABLE_APEX !== 'true') {
+  // Tools requiring explicit opt-in (disabled by default)
+  const optInTools = {
+    sf_apex: 'SF_ENABLE_APEX',
+    fs_deploy: 'SF_ENABLE_FS_DEPLOY',
+  };
+
+  if (optInTools[toolName]) {
+    const envVar = optInTools[toolName];
+    if (process.env[envVar] !== 'true') {
       throw new SecurityError(
-        'Tool "sf_apex" is disabled by default. Set SF_ENABLE_APEX=true to enable it.',
+        `Tool "${toolName}" is disabled by default. Set ${envVar}=true to enable it.`,
         'TOOL_DISABLED',
       );
     }
     return;
   }
 
-  // sf_delete can be disabled via env var
-  const envMap = {
+  // Tools that can be disabled via env var (enabled by default)
+  const optOutTools = {
     sf_delete: 'SF_DISABLE_DELETE',
   };
-  const envVar = envMap[toolName];
+  const envVar = optOutTools[toolName];
   if (envVar && process.env[envVar] === 'true') {
     throw new SecurityError(
       `Tool "${toolName}" is disabled by ${envVar}=true.`,

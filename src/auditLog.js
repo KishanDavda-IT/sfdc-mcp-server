@@ -8,7 +8,10 @@
  * logged at WARN level; everything else at INFO.
  */
 
-const WARN_TOOLS = new Set(['sf_delete', 'sf_bulk_upsert', 'sf_apex']);
+const WARN_TOOLS = new Set([
+  'sf_delete', 'sf_bulk_upsert', 'sf_apex',
+  'fs_patch_file', 'fs_write_file', 'fs_deploy',
+]);
 
 /**
  * Log a tool invocation.

@@ -5,7 +5,7 @@
 [![Tests](https://img.shields.io/badge/tests-46%20passed-success.svg)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A production-grade Node.js MCP (Model Context Protocol) server that gives any AI agent full CRUD + query + Apex control over a Salesforce org via **10 typed tools**.
+A production-grade Node.js MCP (Model Context Protocol) server that gives any AI agent full CRUD + query + Apex control over a Salesforce org, plus a fully sandboxed local File System toolset for metadata deployment, via **15 typed tools**.
 
 ## Quick Start
 
@@ -15,7 +15,7 @@ npm install
 
 # 2. Configure credentials
 cp .env.example .env
-# Edit .env with your Salesforce org credentials
+# Edit .env with your Salesforce org credentials and FS_ROOT_DIR
 
 # 3. Run the server
 npm start
@@ -35,6 +35,11 @@ npm start
 | `sf_list_objects` | List all available SObjects (standard + custom) |
 | `sf_bulk_upsert` | Bulk upsert up to 10,000 records via external ID |
 | `sf_apex` | Execute anonymous Apex code via the Tooling API |
+| `fs_list_tree` | List files recursively within FS_ROOT_DIR |
+| `fs_read_file` | Read file contents (supports start_line/end_line to save tokens) |
+| `fs_patch_file` | Surgical text replacement (requires exactly 1 match of old_string) |
+| `fs_write_file` | Create new files (refuses to overwrite to prevent truncation) |
+| `fs_deploy` | Deploy metadata via `sf project deploy start` (requires sf CLI) |
 
 ## Authentication
 
@@ -76,7 +81,8 @@ Add this to your `claude_desktop_config.json`:
         "SF_LOGIN_URL": "https://login.salesforce.com",
         "SF_USERNAME": "your@email.com",
         "SF_PASSWORD": "yourpassword",
-        "SF_SECURITY_TOKEN": "yourToken"
+        "SF_SECURITY_TOKEN": "yourToken",
+        "FS_ROOT_DIR": "/absolute/path/to/your/sfdx-project"
       }
     }
   }
@@ -87,19 +93,25 @@ Add this to your `claude_desktop_config.json`:
 
 ```
 src/
-├── index.js          # Registers all 10 tools, starts StdioServerTransport
+├── index.js          # Registers all 15 tools, starts StdioServerTransport
 ├── connection.js     # jsforce singleton with auto-reconnect on token expiry
+├── pathSecurity.js   # Sandboxes fs_* tools to FS_ROOT_DIR
 └── tools/
-    ├── query.js      # sf_query   — SOQL
-    ├── create.js     # sf_create  — insert record
-    ├── update.js     # sf_update  — patch record
-    ├── delete.js     # sf_delete  — destroy record
-    ├── get.js        # sf_get     — retrieve by ID
-    ├── describe.js   # sf_describe — object metadata
-    ├── search.js     # sf_search  — SOSL
-    ├── listObjects.js # sf_list_objects — global describe
-    ├── bulkUpsert.js # sf_bulk_upsert — Bulk API v1
-    └── apex.js       # sf_apex    — anonymous Apex
+    ├── query.js      # sf_query
+    ├── create.js     # sf_create
+    ├── update.js     # sf_update
+    ├── delete.js     # sf_delete
+    ├── get.js        # sf_get
+    ├── describe.js   # sf_describe
+    ├── search.js     # sf_search
+    ├── listObjects.js # sf_list_objects
+    ├── bulkUpsert.js # sf_bulk_upsert
+    ├── apex.js       # sf_apex
+    ├── fsListTree.js # fs_list_tree
+    ├── fsReadFile.js # fs_read_file
+    ├── fsPatchFile.js # fs_patch_file
+    ├── fsWriteFile.js # fs_write_file
+    └── fsDeploy.js   # fs_deploy
 ```
 
 - **Transport:** Stdio only (stdin/stdout MCP protocol). No HTTP server.

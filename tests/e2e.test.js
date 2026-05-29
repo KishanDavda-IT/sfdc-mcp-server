@@ -42,7 +42,7 @@ describe('End-to-End Server Protocol Test', () => {
     }
   });
 
-  it('should start the server, complete handshake, and list all 10 tools', async () => {
+  it('should start the server, complete handshake, and list all 15 tools', async () => {
     // Call tools/list via the MCP client
     const response = await client.listTools();
 
@@ -51,7 +51,7 @@ describe('End-to-End Server Protocol Test', () => {
 
     const toolNames = response.tools.map((t) => t.name);
 
-    // Verify all 10 tools are exposed correctly over the protocol
+    // Verify all 10 Salesforce API tools are exposed
     expect(toolNames).toContain('sf_query');
     expect(toolNames).toContain('sf_create');
     expect(toolNames).toContain('sf_update');
@@ -63,6 +63,13 @@ describe('End-to-End Server Protocol Test', () => {
     expect(toolNames).toContain('sf_bulk_upsert');
     expect(toolNames).toContain('sf_apex');
 
-    expect(response.tools.length).toBe(10);
+    // Verify all 5 File System tools are exposed
+    expect(toolNames).toContain('fs_list_tree');
+    expect(toolNames).toContain('fs_read_file');
+    expect(toolNames).toContain('fs_patch_file');
+    expect(toolNames).toContain('fs_write_file');
+    expect(toolNames).toContain('fs_deploy');
+
+    expect(response.tools.length).toBe(15);
   });
 });
