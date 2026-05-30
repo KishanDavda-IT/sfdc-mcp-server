@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import fs from 'fs/promises';
-import { execFile } from 'child_process';
+import { exec } from 'child_process';
 import { resolveSafePath } from '../pathSecurity.js';
 import { checkToolEnabled } from '../security.js';
 import { checkRateLimit } from '../rateLimiter.js';
@@ -13,16 +13,12 @@ const DEPLOY_TIMEOUT = parseInt(
 );
 
 /**
- * Promisified execFile with timeout support.
- *
- * Uses execFile (not exec) to avoid shell injection — arguments are
- * passed as an array, not interpolated into a shell command string.
+ * Promisified exec with timeout support.
  */
-function execFileAsync(cmd, args, options) {
+function execAsync(cmd, options) {
   return new Promise((resolve, reject) => {
-    execFile(cmd, args, options, (error, stdout, stderr) => {
+    exec(cmd, options, (error, stdout, stderr) => {
       if (error) {
-        // Attach stdout/stderr to the error for richer diagnostics
         error.stdout = stdout;
         error.stderr = stderr;
         reject(error);
@@ -88,14 +84,11 @@ export function registerFsDeploy(server) {
         }
 
         // Execute the Salesforce CLI deploy
-        const args = [
-          'project', 'deploy', 'start',
-          '--metadata-dir', resolved,
-          '--json',
-          '--wait', '10',
-        ];
+        const targetOrg = process.env.SF_TARGET_ORG || '';
+        const orgFlag = targetOrg ? ` -o "${targetOrg}"` : '';
+        const cmd = `sf project deploy start --metadata-dir "${resolved}" --json --wait 10${orgFlag}`;
 
-        const { stdout, stderr } = await execFileAsync('sf', args, {
+        const { stdout, stderr } = await execAsync(cmd, {
           timeout: DEPLOY_TIMEOUT,
           maxBuffer: 10 * 1024 * 1024, // 10 MB buffer for large deploy outputs
         });
